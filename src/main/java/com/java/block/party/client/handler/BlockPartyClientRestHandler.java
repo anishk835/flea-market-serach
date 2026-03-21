@@ -17,6 +17,9 @@ import com.java.block.party.template.exception.BlockPartySearchException;
 
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+
 @RestController
 public class BlockPartyClientRestHandler {
 
@@ -28,18 +31,21 @@ public class BlockPartyClientRestHandler {
     private BlockPartyClientService blockPartyClientService;
 
     @GetMapping(GET_PARTY_DETAILS_BY_ID_V1)
-    public Mono<ItemDetails> getBlockPartyDetails(@RequestParam(name = "id", required = true) String id) {
+    public Mono<ItemDetails> getBlockPartyDetails(
+            @RequestParam(name = "id", required = true)
+            @Pattern(regexp = "^[0-9]{1,10}$", message = "ID must be numeric and between 1-10 digits")
+            String id) {
         return blockPartyClientService.getBlockPartyDetails(id);
     }
 
     @PostMapping(GET_BLOCK_PARTIES_V1)
-    public Mono<AllItems> getBlockParties(@RequestBody QueryParams partySearchRequest) {
+    public Mono<AllItems> getBlockParties(@Valid @RequestBody QueryParams partySearchRequest) {
         validateSortOrder(partySearchRequest);
         return blockPartyClientService.getBlockParties(partySearchRequest);
     }
 
     @PostMapping(GET_BLOCK_PARTIES_GEO_LOCATION_V1)
-    public Mono<ItemsGeoLocation> getFleaMarketItemsByGeoLocation(@RequestBody QueryParams partySearchRequest) {
+    public Mono<ItemsGeoLocation> getFleaMarketItemsByGeoLocation(@Valid @RequestBody QueryParams partySearchRequest) {
         validateSortOrder(partySearchRequest);
         return blockPartyClientService.getFleaMarketItemsGeoLocation(partySearchRequest);
     }

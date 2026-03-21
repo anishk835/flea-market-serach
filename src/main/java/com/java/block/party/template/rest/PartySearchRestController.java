@@ -13,6 +13,9 @@ import com.java.block.party.model.SortOrder;
 import com.java.block.party.template.exception.BlockPartySearchException;
 import com.java.block.party.template.service.PartySearchService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+
 @RestController
 public class PartySearchRestController {
 
@@ -25,7 +28,7 @@ public class PartySearchRestController {
     }
 
     @PostMapping("/parties")
-    public PartySearchResponse getBlockParties(@RequestBody QueryParams partySearchRequest) {
+    public PartySearchResponse getBlockParties(@Valid @RequestBody QueryParams partySearchRequest) {
         SortOrder sortOrder = partySearchRequest.getSortOrder();
         if (sortOrder != null && (sortOrder.getType().isBlank() || sortOrder.getOrder() == null)) {
             throw new BlockPartySearchException("sort order does not contain proper details.");
@@ -34,7 +37,10 @@ public class PartySearchRestController {
     }
 
     @GetMapping("/party/query")
-    public PartySearchResponse getBlockPartyDetails(@RequestParam(name = "id") String id) {
+    public PartySearchResponse getBlockPartyDetails(
+            @RequestParam(name = "id")
+            @Pattern(regexp = "^[0-9]{1,10}$", message = "ID must be numeric and between 1-10 digits")
+            String id) {
         return partySearchService.getBlockPartyDetails(id);
     }
 }

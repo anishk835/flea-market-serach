@@ -26,39 +26,46 @@ public class FleaMarketClientService {
     private UrlBuilder urlBuilder;
 
     public Mono<ItemsGeoLocation> getFleaMarketItemsGeoLocation(final QueryParams params) {
-        String url = UriComponentsBuilder.fromUriString(urlBuilder.getItemsGeoJsonUrl()).query(buildQueryString(params))
-                .build().toUriString();
+        String url = buildUrlWithParams(urlBuilder.getItemsGeoJsonUrl(), params);
         log.debug("geo based items details url is : {}", url);
         return webClient.get().uri(url).retrieve().bodyToMono(ItemsGeoLocation.class);
     }
 
     public Mono<AllItems> getBlockParties(final QueryParams params) {
-        String url = UriComponentsBuilder.fromUriString(urlBuilder.getAllItemsJsonUrl()).query(buildQueryString(params))
-                .build().toUriString();
+        String url = buildUrlWithParams(urlBuilder.getAllItemsJsonUrl(), params);
         log.debug("items url with query string is : {}", url);
         return webClient.get().uri(url).retrieve().bodyToMono(AllItems.class);
     }
 
     public Mono<ItemDetails> getBlockPartyDetails(final String id) {
-        String url = UriComponentsBuilder.fromUriString(urlBuilder.getItemJsonUrl()).buildAndExpand(id).toUriString();
+        String url = UriComponentsBuilder.fromUriString(urlBuilder.getItemJsonUrl())
+                .buildAndExpand(id).toUriString();
         log.debug("item details url is : {}", url);
         return webClient.get().uri(url).retrieve().bodyToMono(ItemDetails.class);
     }
 
-    private String buildQueryString(QueryParams params) {
-        if (null == params) {
-            return "";
+    private String buildUrlWithParams(String baseUrl, QueryParams params) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
+
+        if (params != null) {
+            if (params.getSearchKeyWord() != null && !params.getSearchKeyWord().isEmpty()) {
+                builder.queryParam("q", params.getSearchKeyWord());
+            }
+            if (params.getDistrict() != null && !params.getDistrict().isEmpty()) {
+                builder.queryParam("bezirk", params.getDistrict());
+            }
+            builder.queryParam("ipp", params.getResultPerPage());
+
+            SortOrder sortOrder = params.getSortOrder();
+            if (sortOrder != null && sortOrder.getType() != null && !sortOrder.getType().isEmpty()
+                    && sortOrder.getOrder() != null) {
+                builder.queryParam("order", sortOrder.getType() + "+" + sortOrder.getOrder());
+                builder.fragment("results");
+            } else {
+                builder.fragment("searchresults");
+            }
         }
-        StringBuilder queryString = new StringBuilder();
-        SortOrder sortOrder = params.getSortOrder();
-        queryString.append(params.getSearchKeyWord()).append("&bezirk=").append(params.getDistrict()).append("&ipp=")
-                .append(params.getResultPerPage());
-        if (sortOrder != null) {
-            queryString.append("&order=").append(sortOrder.getType()).append("+").append(sortOrder.getOrder())
-                    .append("#results");
-        } else {
-            queryString.append("#searchresults");
-        }
-        return queryString.toString();
+
+        return builder.build().toUriString();
     }
 }

@@ -14,9 +14,9 @@ public class PartySearchResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private transient Results results;
-    private transient List<Index> items;
-    private transient SortOrder sortOrder;
-    private transient Item item;
+    private Results results;
+    private List<Index> items;
+    private SortOrder sortOrder;
+    private Item item;
 
 }

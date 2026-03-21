@@ -17,7 +17,9 @@ public class PartySearchService {
     @Autowired
     private FleaMarketRestService fleaMarketRestService;
 
-    @Cacheable(key = "#partySearchRequest", value = "partySearchResponse")
+    @Cacheable(key = "T(java.lang.String).valueOf(#partySearchRequest.hashCode())",
+              value = "partySearchList",
+              unless = "#result == null")
     public PartySearchResponse getBlockParties(QueryParams partySearchRequest) {
         AllItems items = fleaMarketRestService.getBlockParties(partySearchRequest);
         PartySearchResponse partySearchResponse = new PartySearchResponse();
@@ -27,7 +29,9 @@ public class PartySearchService {
         return partySearchResponse;
     }
 
-    @Cacheable(key = "#id", value = "partySearchResponse")
+    @Cacheable(key = "T(java.lang.String).valueOf(#id.hashCode())",
+              value = "partyDetails",
+              unless = "#result == null")
     public PartySearchResponse getBlockPartyDetails(String id) {
         ItemDetails itemDetails = fleaMarketRestService.getBlockPartyDetails(id);
         PartySearchResponse partySearchResponse = new PartySearchResponse();

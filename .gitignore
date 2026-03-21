@@ -8,3 +8,4 @@ target
 .settings
 .metadata
 .DS_Store
+.env

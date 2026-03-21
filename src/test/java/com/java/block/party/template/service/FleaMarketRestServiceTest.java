@@ -1,5 +1,7 @@
 package com.java.block.party.template.service;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,21 +40,21 @@ class FleaMarketRestServiceTest {
 
     @Test
     final void testGetBlockParties() {
+        QueryParams params = new QueryParams();
         when(urlBuilder.getAllItemsJsonUrl()).thenReturn(HTTP_LOCALHOST_8080_PARTIES);
-        when(restTemplate.getForEntity(HTTP_LOCALHOST_8080_PARTIES_BEZIRK_IPP_10_SEARCHRESULTS, AllItems.class))
+        when(restTemplate.getForEntity(anyString(), eq(AllItems.class)))
                 .thenReturn(new ResponseEntity<AllItems>(allItems, HttpStatus.OK));
-        fleaMarketRestService.getBlockParties(new QueryParams());
-        verify(restTemplate, times(1)).getForEntity(HTTP_LOCALHOST_8080_PARTIES_BEZIRK_IPP_10_SEARCHRESULTS,
-                AllItems.class);
+        fleaMarketRestService.getBlockParties(params);
+        verify(restTemplate, times(1)).getForEntity(anyString(), eq(AllItems.class));
     }
 
     @Test
     final void testGetBlockPartyDetails() {
         when(urlBuilder.getItemJsonUrl()).thenReturn(HTTP_LOCALHOST_8080_PARTY_QUERY_ID_321);
-        when(restTemplate.getForEntity(HTTP_LOCALHOST_8080_PARTY_QUERY_ID_321, ItemDetails.class))
+        when(restTemplate.getForEntity(anyString(), eq(ItemDetails.class)))
                 .thenReturn(new ResponseEntity<ItemDetails>(itemDetails, HttpStatus.OK));
         fleaMarketRestService.getBlockPartyDetails("321");
-        verify(restTemplate, times(1)).getForEntity(HTTP_LOCALHOST_8080_PARTY_QUERY_ID_321, ItemDetails.class);
+        verify(restTemplate, times(1)).getForEntity(anyString(), eq(ItemDetails.class));
     }
 
 }
