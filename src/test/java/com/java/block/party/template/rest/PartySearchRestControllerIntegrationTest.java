@@ -7,7 +7,8 @@ import com.java.block.party.template.service.PartySearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,7 +22,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(PartySearchRestController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class PartySearchRestControllerIntegrationTest {
 
     @Autowired
@@ -161,6 +163,10 @@ class PartySearchRestControllerIntegrationTest {
     void testGetBlockPartyDetailsWithInvalidId() throws Exception {
         mockMvc.perform(get("/party/query")
                         .param("id", "abc"))
+                .andDo(result -> {
+                    System.out.println("Status: " + result.getResponse().getStatus());
+                    System.out.println("Content: " + result.getResponse().getContentAsString());
+                })
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Validation failed")));
 

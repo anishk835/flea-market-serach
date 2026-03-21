@@ -101,14 +101,17 @@ class BlockPartyRestExceptionHandlerTest {
     }
 
     @Test
-    void testHandleMethodArgumentNotValid() {
+    void testHandleMethodArgumentNotValid() throws Exception {
         BindingResult bindingResult = mock(BindingResult.class);
         FieldError fieldError1 = new FieldError("object", "searchKeyWord", "must not be empty");
         FieldError fieldError2 = new FieldError("object", "resultPerPage", "must be at least 1");
         when(bindingResult.getFieldErrors()).thenReturn(Arrays.asList(fieldError1, fieldError2));
 
-        MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
-        when(ex.getBindingResult()).thenReturn(bindingResult);
+        // Create a real MethodParameter from a test method
+        java.lang.reflect.Method method = this.getClass().getDeclaredMethod("dummyMethod", String.class);
+        org.springframework.core.MethodParameter methodParameter = new org.springframework.core.MethodParameter(method, 0);
+
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(methodParameter, bindingResult);
 
         ResponseEntity<Object> response = exceptionHandler.handleMethodArgumentNotValid(
                 ex, new HttpHeaders(), HttpStatus.BAD_REQUEST, webRequest);
@@ -119,6 +122,11 @@ class BlockPartyRestExceptionHandlerTest {
         assertThat(apiError.getMessage()).contains("Validation failed");
         assertThat(apiError.getMessage()).contains("searchKeyWord");
         assertThat(apiError.getMessage()).contains("resultPerPage");
+    }
+
+    // Helper method for MethodParameter creation
+    @SuppressWarnings("unused")
+    private void dummyMethod(String param) {
     }
 
     @Test
