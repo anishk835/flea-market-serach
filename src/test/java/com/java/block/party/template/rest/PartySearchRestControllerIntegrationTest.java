@@ -163,10 +163,6 @@ class PartySearchRestControllerIntegrationTest {
     void testGetBlockPartyDetailsWithInvalidId() throws Exception {
         mockMvc.perform(get("/party/query")
                         .param("id", "abc"))
-                .andDo(result -> {
-                    System.out.println("Status: " + result.getResponse().getStatus());
-                    System.out.println("Content: " + result.getResponse().getContentAsString());
-                })
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Validation failed")));
 
