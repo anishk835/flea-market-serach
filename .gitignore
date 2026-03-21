@@ -9,3 +9,4 @@ target
 .metadata
 .DS_Store
 .env
+.claude/
